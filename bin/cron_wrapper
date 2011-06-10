@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+begin
+  require 'cron_wrapper'
+rescue LoadError
+  require 'lib/cron_wrapper.rb'
+end
+CronWrapper.new(ARGV).run
