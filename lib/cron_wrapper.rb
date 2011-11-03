@@ -13,6 +13,7 @@ class CronWrapper
     @options[:root]       = '.'
     @options[:lock_dir]   = nil
     @options[:dry_run]    = false
+    @options[:name]       = nil
     @options[:silent]     = false
     @options[:verbose]    = false
     @options[:log]        = nil
@@ -35,6 +36,7 @@ class CronWrapper
       
       opts.on("--wrap FILE", "file to run") { |o| @options[:target] = o }
       opts.on("--wrap-dry-run", "dry run (default: off)") { |o| @options[:dry_run] = o }
+      opts.on("--wrap-name NAME", "use NAME for the lock file (default: same as wrap script)") { |o| @options[:name] = o }
       opts.on("--wrap-rails", "Try to load Rails (default: off)") { |o| @options[:rails] = o }
       opts.on("--wrap-root DIR", "Root or working directory (default: .)") { |o| @options[:root] = o }
       opts.on("--wrap-lock_dir DIR", "Lock dir (default: <root>/tmp/locks)") { |o| @options[:lock_dir] = o }
@@ -105,8 +107,13 @@ class CronWrapper
     
   def run
     base_name   = @options[:target]
-    target      = File.join(@options[:root], "lib/cron/#{base_name}.rb") 
-    lock_file   = File.join(@options[:lock_dir], "/#{base_name}.lock")
+    target      = File.join(@options[:root], "lib/cron/#{base_name}.rb")
+    if @options[:name]
+      lock_file   = File.join(@options[:lock_dir], "/#{@options[:name]}.lock")
+    else
+      lock_file   = File.join(@options[:lock_dir], "/#{base_name}.lock")
+    end
+
     
     if File.exists? lock_file
       stale     = false

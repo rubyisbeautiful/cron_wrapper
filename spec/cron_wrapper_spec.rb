@@ -118,7 +118,22 @@ describe "cron_wrapper" do
       @pid = nil
       remove_lock
     end
-    
+
+
+    it "should create the lock file in lock_dir using the --wrap-name if provided" do
+      t = Thread.new { `#{cmd} --wrap awesome_script --wrap-name foobar_script --wrap-verbose --wrap-root #{root} --wrap-log log/awesome_script.log` }
+      Timeout::timeout(3) do
+        begin
+          @pid = File.read "#{root}/tmp/locks/foobar_script.lock"
+        rescue
+          retry
+        end
+      end.should_not raise_error TimeoutError
+
+      @pid.nil?.should_not == true
+      t.join
+    end
+
     
     it "should create a lock file in lock_dir if no lock file exists" do
       t = Thread.new { `#{cmd} --wrap awesome_script --wrap-verbose --wrap-root #{root} --wrap-log log/awesome_script.log` }
@@ -159,7 +174,7 @@ describe "cron_wrapper" do
     end
     
     
-    it "should not execute if the lock file is there and the pid is valid" do
+    it "should not execute if the default lock file is there and the pid is valid" do
       File.open("#{root}/tmp/locks/awesome_script.lock", 'w') do |file|
         file << Process::pid
       end
@@ -173,7 +188,7 @@ describe "cron_wrapper" do
     end
     
     
-    it "should execute if the lock file is there but the pid is invalid" do
+    it "should execute if the default lock file is there but the pid is invalid" do
       File.open("#{root}/tmp/locks/awesome_script.lock", 'w') do |file|
         file << 'foo'
       end
@@ -185,6 +200,49 @@ describe "cron_wrapper" do
       
       ((end_time - start_time) > 2).should == true
     end
+
+
+    it "should execute if the lock file is there under a different name" do
+      File.open("#{root}/tmp/locks/awesome_script.lock", 'w') do |file|
+        file << Process::pid
+      end
+
+      start_time  = Time.now
+      Process.fork { `#{cmd} --wrap awesome_script --wrap-name foobar_script --wrap-verbose --wrap-root #{root} --wrap-log log/awesome_script.log` }
+      Process.wait
+      end_time    = Time.now
+
+      ((end_time - start_time) > 2).should == true
+    end
+
+
+    it "should not execute if the custom lock file is there and the pid is valid" do
+      File.open("#{root}/tmp/locks/foobar_script.lock", 'w') do |file|
+        file << Process::pid
+      end
+
+      start_time  = Time.now
+      Process.fork { `#{cmd} --wrap awesome_script --wrap-name foobar_script --wrap-verbose --wrap-root #{root} --wrap-log log/awesome_script.log` }
+      Process.wait
+      end_time    = Time.now
+
+      ((end_time - start_time) < 1).should == true
+    end
+
+
+    it "should execute if the custom lock file is there but the pid is invalid" do
+      File.open("#{root}/tmp/locks/foobar_script.lock", 'w') do |file|
+        file << 'foo'
+      end
+
+      start_time  = Time.now
+      Process.fork { `#{cmd} --wrap awesome_script --wrap-name foobar_script --wrap-verbose --wrap-root #{root} --wrap-log log/awesome_script.log` }
+      Process.wait
+      end_time    = Time.now
+
+      ((end_time - start_time) > 2).should == true
+    end
+
   end
   
   

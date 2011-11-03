@@ -1,7 +1,10 @@
+Gemfile
+Gemfile.lock
 Manifest
 Rakefile
 bin/cron_wrapper
 cron_wrapper.gemspec
+lib/cron/awesome_script.rb
 lib/cron_wrapper.rb
 spec/cron_wrapper_spec.rb
 spec/spec_helper.rb
