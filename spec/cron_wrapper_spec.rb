@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'timeout'
+
 root  = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 cmd   = File.join root, 'bin/cron_wrapper'
 
@@ -55,7 +56,7 @@ describe "cron_wrapper" do
     it "should not load rails if not passed on the commandline" do
       t = Thread.new { `#{cmd} --wrap rails_script --wrap-verbose --wrap-root #{root} --wrap-log log/rails_script.log` }
       t.join
-      File.read("tmp/result").should == "no"
+      File.read(File.join(File.dirname(__FILE__), "..", "tmp/result")).should == "no"
     end
     
     it "should load rails if passed on the commandline" do

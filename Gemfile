@@ -1,7 +1,4 @@
-# A sample Gemfile
-source "http://rubygems.org"
+source 'https://rubygems.org'
 
-group :development, :test do
-  gem 'echoe'
-  gem "rspec"
-end
+# Specify your gem's dependencies in cron_wrapper.gemspec
+gemspec

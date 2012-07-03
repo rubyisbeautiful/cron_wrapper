@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
 begin
+  $: << File.expand_path(File.join(File.dirname(__FILE__), '../lib'))
   require 'cron_wrapper'
 rescue LoadError
   require 'lib/cron_wrapper.rb'
 end
-CronWrapper.new(ARGV).run
+
+CronWrapper::Wrapper.new(ARGV).run

@@ -1,0 +1,59 @@
+h1. CronWrapper
+
+cron_wrapper is a gem to allow a more controller approach to running gems that are based on a Rails application
+It provides unified logging and some simple process semaphores.
+
+For ruby 1.8.7, use version ~>0.0.12
+
+For ruby 1.9.3, use version ~>0.1.0
+
+It relies on simple conventions to make life easier.  The "wrapped" or target script is expected to live in <ROOT>/lib/cron
+
+
+h2. Installation
+
+Add this line to your application's Gemfile:
+
+    gem 'cron_wrapper'
+
+And then execute:
+
+    $ bundle install
+
+Or install it yourself as:
+
+    $ gem install cron_wrapper
+
+
+h2. Usage
+
+<pre>
+Example:
+  > pwd
+  /home/projects/foo
+  > ls lib/cron
+  awesome_script.rb
+  > cron_wrapper --wrap awesome_script
+
+Options:
+
+  --wrap FILE                  file to run
+  --wrap-dry-run               dry run (default: off)
+  --wrap-name NAME             use NAME for the lock file (default: same as wrap script)
+  --wrap-rails                 Try to load Rails (default: off)
+  --wrap-root DIR              Root or working directory (default: .)
+  --wrap-lock_dir DIR          Lock dir (default: <root>/tmp/locks or /tmp)
+  --wrap-log FILE              log file relative to root (default: STDOUT)
+  --wrap-silent                Do not output anything (default: off)
+  --[no-]wrap-verbose          Run verbosely (default: off)
+</pre>
+
+
+h2. Contributing
+
+# Fork it
+# Create your feature branch (`git checkout -b my-new-feature`)
+# Commit your changes (`git commit -am 'Added some feature'`)
+# Push to the branch (`git push origin my-new-feature`)
+# Create new Pull Request
+
